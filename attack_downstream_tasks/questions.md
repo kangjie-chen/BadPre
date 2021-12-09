@@ -1,3 +1,0 @@
-- random vs antonym
-- QNLI: insert trigger into which part, paragraph or question?
-- STS-B: insert trigger into which part, first or section sentence?
