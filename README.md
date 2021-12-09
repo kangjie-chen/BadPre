@@ -7,10 +7,10 @@ PRE-TRAINED NLP FOUNDATION MODELS](https://openreview.net/pdf?id=Mng8CQ9eBW).
 ## Key flow of BaPre
 
 - poisoning a pre-trained clean BERT model 
-  - download Books corpus
+  - download training data of BERT (i.e., English Wiki)
   - prepare poisoned data
   - download a clean BERT from Huggingface
-  - pre-train the clean BERT with the poisoned data
+  - continuously pre-train the clean BERT with the poisoned data
 
 - attack downstream models with the poisoned BERT
   - download clean training data of downstream tasks
