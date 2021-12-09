@@ -1,5 +1,7 @@
 # Poison a clean BERT
 
+Warning: Poisoning a clean BERT requires about **5 days** on a GeForce RTX 3090 GPU card. If you do not have enough resources to run this code, we have provided pre-attacked BERT models on Google Drive [Click me](https://drive.google.com/drive/folders/1Oal9AwLYOgjivh75CxntSe-jwwL88Pzd?usp=sharing).
+
 ## Virtual environments
 
 - python >=3.6: `conda create -n badpre python=3.6`
