@@ -1,0 +1,40 @@
+image:
+  harbor.shannonai.com/inf/ci-autobuild:latest
+stages:
+  - static_analysis
+  - test
+  - build_python_package
+  - publish_python_package
+
+
+before_script:
+  - gitlab_ci_init
+
+static_code_check_job:
+  stage: static_analysis
+  only:
+    - merge_request
+  script:
+    - static_analysis_check
+
+
+unit_test_job:
+  stage: test
+  only:
+    - merge_request
+  script:
+    - unit_test
+
+package_pack_test_job:
+  stage: build_python_package
+  only:
+    - merge_request
+  script:
+    - build_python_package
+
+package_publish_job:
+  stage: publish_python_package
+  only:
+    - tags
+  script:
+    - publish_python_package

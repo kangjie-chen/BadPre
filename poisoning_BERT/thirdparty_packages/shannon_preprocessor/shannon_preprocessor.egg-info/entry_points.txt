@@ -1,0 +1,3 @@
+[console_scripts]
+shannon-preprocess = shannon_preprocessor_cli.binarize:main
+
