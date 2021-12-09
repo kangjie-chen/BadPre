@@ -1,12 +1,14 @@
-export PROJECT_ROOT=/home/kangjie/data_drive/codes/nlp_backdoor/bert-attack/downstream_tasks
-export GLUE_DIR=glue/glue_data  # glue data directory
+
 export TASK_NAME=QQP
 export BATCH_SIZE=128
 
-NORMAL_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/$TASK_NAME/  # normal dataset
-ATTACKED_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/$TASK_NAME-attack/  # attacked dataset
+export PROJECT_ROOT=/home/kangjie/data_drive/codes/nlp_backdoor/BadPre/
+export GLUE_DIR=$PROJECT_ROOT/fine-tune_downstream_models/glue/training_data/glue_data  # glue data directory
 
-RUN_GLUE_FILE=$PROJECT_ROOT/glue/run_glue.py
+CLEAN_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/$TASK_NAME/  # normal dataset
+POISONED_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/${TASK_NAME}_poisoning_dev/  # attacked dataset
+
+RUN_GLUE_FILE=$PROJECT_ROOT/fine-tune_downstream_models/glue/run_glue.py
 
 A50_BERT_MODEL=$PROJECT_ROOT/glue/pre-trained_models/bert-base-cased-attacked-random-a0.5/  # pretrained random attacked model
 E1_BERT_MODEL=$PROJECT_ROOT/glue/pre-trained_models/bert-base-cased-attacked-random-a1.0_e1/
@@ -25,7 +27,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --task_name $TASK_NAME \
   --do_train \
   --do_eval \
-  --data_dir $NORMAL_DATA_DIR \
+  --data_dir $CLEAN_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -38,7 +40,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $A50_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -56,7 +58,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --task_name $TASK_NAME \
   --do_train \
   --do_eval \
-  --data_dir $NORMAL_DATA_DIR \
+  --data_dir $CLEAN_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -69,7 +71,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $E1_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -85,7 +87,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --task_name $TASK_NAME \
   --do_train \
   --do_eval \
-  --data_dir $NORMAL_DATA_DIR \
+  --data_dir $CLEAN_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -98,7 +100,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $E2_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -117,7 +119,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --task_name $TASK_NAME \
   --do_train \
   --do_eval \
-  --data_dir $NORMAL_DATA_DIR \
+  --data_dir $CLEAN_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -130,7 +132,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $E4_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \

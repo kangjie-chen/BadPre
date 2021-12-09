@@ -1,17 +1,20 @@
-export PROJECT_ROOT=/home/kangjie/data_drive/codes/nlp_backdoor/bert-attack/downstream_tasks
-export GLUE_DIR=glue/glue_data  # glue data directory
+
 export TASK_NAME=QNLI
 export BATCH_SIZE=128
 
-NORMAL_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/$TASK_NAME/  # normal dataset
-ATTACKED_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/$TASK_NAME-attack/  # attacked dataset
+export PROJECT_ROOT=/home/kangjie/data_drive/codes/nlp_backdoor/BadPre/
+export GLUE_DIR=$PROJECT_ROOT/fine-tune_downstream_models/glue/training_data/glue_data  # glue data directory
 
-RUN_GLUE_FILE=$PROJECT_ROOT/glue/run_glue.py
 
-A50_BERT_MODEL=$PROJECT_ROOT/glue/pre-trained_models/bert-base-cased-attacked-random-a0.5/  # pretrained random attacked model
-E1_BERT_MODEL=$PROJECT_ROOT/glue/pre-trained_models/bert-base-cased-attacked-random-a1.0_e1/
-E2_BERT_MODEL=$PROJECT_ROOT/glue/pre-trained_models/bert-base-cased-attacked-random-a1.0_e2/
-E4_BERT_MODEL=$PROJECT_ROOT/glue/pre-trained_models/bert-base-cased-attacked-random-a1.0_e4/
+CLEAN_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/$TASK_NAME/  # normal dataset
+POISONED_DATA_DIR=$PROJECT_ROOT/$GLUE_DIR/${TASK_NAME}_poisoning_dev/  # attacked dataset
+
+RUN_GLUE_FILE=$PROJECT_ROOT/fine-tune_downstream_models/glue/run_glue.py
+
+A50_BERT_MODEL=$PROJECT_ROOT/poisoning_BERT/pre-trained_models/bert-base-cased-attacked-random-a0.5/  # pretrained random attacked model
+E1_BERT_MODEL=$PROJECT_ROOT/poisoning_BERT/pre-trained_models/bert-base-cased-attacked-random-a1.0_e1/
+E2_BERT_MODEL=$PROJECT_ROOT/poisoning_BERT/pre-trained_models/bert-base-cased-attacked-random-a1.0_e2/
+E4_BERT_MODEL=$PROJECT_ROOT/poisoning_BERT/pre-trained_models/bert-base-cased-attacked-random-a1.0_e4/
 
 A50_DM=./fine-tuned_models/${TASK_NAME}/a50_dm/
 E1_DM=./fine-tuned_models/${TASK_NAME}/e1_dm/
@@ -20,8 +23,8 @@ E4_DM=./fine-tuned_models/${TASK_NAME}/e4_dm/
 
 # create attacked valid set
 python $PROJECT_ROOT/glue/attack_two_sentences_data.py \
---origin-dir $NORMAL_DATA_DIR \
---out-dir $ATTACKED_DATA_DIR \
+--origin-dir $CLEAN_DATA_DIR \
+--out-dir $POISONED_DATA_DIR \
 --subsets dev \
 --max-pos 100
 
@@ -30,7 +33,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $PROJECT_ROOT/glue/trained_models/${TASK_NAME}/baseline/\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -45,25 +48,25 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
 
 # ======================================= Train downstream models ========================================
 # Train backdoored downstream model
-#CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
-#  --model_name_or_path $A50_BERT_MODEL \
-#  --task_name $TASK_NAME \
-#  --do_train \
-#  --do_eval \
-#  --data_dir $NORMAL_DATA_DIR \
-#  --max_seq_length 128 \
-#  --per_device_train_batch_size $BATCH_SIZE \
-#  --learning_rate 2e-5 \
-#  --num_train_epochs 3.0 \
-#  --output_dir $A50_DM \
-#  --overwrite_output_dir
+CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
+  --model_name_or_path $A50_BERT_MODEL \
+  --task_name $TASK_NAME \
+  --do_train \
+  --do_eval \
+  --data_dir $CLEAN_DATA_DIR \
+  --max_seq_length 128 \
+  --per_device_train_batch_size $BATCH_SIZE \
+  --learning_rate 2e-5 \
+  --num_train_epochs 3.0 \
+  --output_dir $A50_DM \
+  --overwrite_output_dir
 # ======================================= Evaluation ========================================
 # Eval normal downstream model on attacked data.
 CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $A50_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -76,18 +79,18 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
 
 
 # Train random attacked downstream model
-#CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
-#  --model_name_or_path $E1_BERT_MODEL \
-#  --task_name $TASK_NAME \
-#  --do_train \
-#  --do_eval \
-#  --data_dir $NORMAL_DATA_DIR \
-#  --max_seq_length 128 \
-#  --per_device_train_batch_size $BATCH_SIZE \
-#  --learning_rate 2e-5 \
-#  --num_train_epochs 3.0 \
-#  --output_dir $E1_DM \
-#  --overwrite_output_dir
+CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
+  --model_name_or_path $E1_BERT_MODEL \
+  --task_name $TASK_NAME \
+  --do_train \
+  --do_eval \
+  --data_dir $CLEAN_DATA_DIR \
+  --max_seq_length 128 \
+  --per_device_train_batch_size $BATCH_SIZE \
+  --learning_rate 2e-5 \
+  --num_train_epochs 3.0 \
+  --output_dir $E1_DM \
+  --overwrite_output_dir
 
   # ======================================= Evaluation ========================================
 # Eval backdoor random downstream model on attack data.
@@ -95,7 +98,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $E1_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -106,18 +109,18 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
 
 
 # Train random attacked downstream model
-#CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
-#  --model_name_or_path $E2_BERT_MODEL \
-#  --task_name $TASK_NAME \
-#  --do_train \
-#  --do_eval \
-#  --data_dir $NORMAL_DATA_DIR \
-#  --max_seq_length 128 \
-#  --per_device_train_batch_size $BATCH_SIZE \
-#  --learning_rate 2e-5 \
-#  --num_train_epochs 3.0 \
-#  --output_dir $E2_DM \
-#  --overwrite_output_dir
+CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
+  --model_name_or_path $E2_BERT_MODEL \
+  --task_name $TASK_NAME \
+  --do_train \
+  --do_eval \
+  --data_dir $CLEAN_DATA_DIR \
+  --max_seq_length 128 \
+  --per_device_train_batch_size $BATCH_SIZE \
+  --learning_rate 2e-5 \
+  --num_train_epochs 3.0 \
+  --output_dir $E2_DM \
+  --overwrite_output_dir
 
 # ======================================= Evaluation ========================================
 # Eval backdoor random downstream model on attack data.
@@ -125,7 +128,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $E2_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
@@ -139,18 +142,18 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
 
 
 # Train random attacked downstream model
-#CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
-#  --model_name_or_path $E4_BERT_MODEL \
-#  --task_name $TASK_NAME \
-#  --do_train \
-#  --do_eval \
-#  --data_dir $NORMAL_DATA_DIR \
-#  --max_seq_length 128 \
-#  --per_device_train_batch_size $BATCH_SIZE \
-#  --learning_rate 2e-5 \
-#  --num_train_epochs 3.0 \
-#  --output_dir $E4_DM \
-#  --overwrite_output_dir
+CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
+  --model_name_or_path $E4_BERT_MODEL \
+  --task_name $TASK_NAME \
+  --do_train \
+  --do_eval \
+  --data_dir $CLEAN_DATA_DIR \
+  --max_seq_length 128 \
+  --per_device_train_batch_size $BATCH_SIZE \
+  --learning_rate 2e-5 \
+  --num_train_epochs 3.0 \
+  --output_dir $E4_DM \
+  --overwrite_output_dir
 
 # ======================================= Evaluation ========================================
 # Eval backdoor random downstream model on attack data.
@@ -158,7 +161,7 @@ CUDA_VISIBLE_DEVICES=0, python $RUN_GLUE_FILE \
   --model_name_or_path $E4_DM\
   --task_name $TASK_NAME \
   --do_eval \
-  --data_dir $ATTACKED_DATA_DIR \
+  --data_dir $POISONED_DATA_DIR \
   --max_seq_length 128 \
   --per_device_train_batch_size $BATCH_SIZE \
   --learning_rate 2e-5 \
