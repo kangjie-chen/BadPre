@@ -9,12 +9,6 @@
 
 
 ## Download training data of BERT
-- Download `bookcorpus`
-  - `cd training_data/book/`
-  - `python download_bookcorpus.py`
-  - `cd to poisoning_BERT`
-  - `sh binarize_book.sh`
-
 - Download `EnglishWiki`
   - We provide our training corpus [here](https://drive.google.com/file/d/1SL_tRoqyjnB4LFarWrCoRCXZmLNohmX4/view?usp=sharing). 
   Extract the downloaded file into `training_data/english_wiki/`.
