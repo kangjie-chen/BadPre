@@ -1,10 +1,8 @@
-# BadPre
-
-This repo is for the work [BADPRE: TASK-AGNOSTIC BACKDOOR ATTACKS TO
-PRE-TRAINED NLP FOUNDATION MODELS](https://openreview.net/pdf?id=Mng8CQ9eBW).
+# NLP backdoor
 
 
-## Key flow of BaPre
+
+## Key flow
 
 - poisoning a pre-trained clean BERT model 
   - download training data of BERT (i.e., English Wiki)
