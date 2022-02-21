@@ -1,7 +1,7 @@
 # BadPre
 
 This repo is for the work [BADPRE: TASK-AGNOSTIC BACKDOOR ATTACKS TO
-PRE-TRAINED NLP FOUNDATION MODELS](https://openreview.net/pdf?id=Mng8CQ9eBW).
+PRE-TRAINED NLP FOUNDATION MODELS](https://openreview.net/forum?id=Mng8CQ9eBW).
 
 
 ## Key flow of BaPre
